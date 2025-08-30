@@ -43,13 +43,16 @@ HEIGHT = 64 # rows
 COMMAND_CONTROL_BYTE    = 0x00    # 0000_0000
 DATA_CONTROL_BYTE       = 0x40    # 0100_0000
 
-COMMAND_DISPLAY_OFF     = 0xAE
-COMMAND_DISPLAY_ON      = 0xAF
+COMMAND_DISPLAY_OFF         = 0xAE
+COMMAND_DISPLAY_ON          = 0xAF
+COMMAND_DISPLAY_START_LINE  = 0x40
+COMMAND_MEMORY_MODE         = 0x20
+COMMAND_NORMAL_DISPLAY      = 0xA6
 
-START_PAGE_INDEX        = 0xB0
-ADDRESS_LOWER_NIBBLE    = 0x00
-ADDRESS_HIGER_NIBBLE    = 0x10
-ADDRESS_MASK            = 0x0F
+START_PAGE_INDEX            = 0xB0
+ADDRESS_LOWER_NIBBLE        = 0x00
+ADDRESS_HIGHER_NIBBLE       = 0x10
+ADDRESS_MASK                = 0x0F
 
 bus = SMBus(I2C_BUS)
 
@@ -62,9 +65,10 @@ def send_data(data):
 # we have 64 rows are 8 pages
 # 128 colums are 16 bytes
 def draw_pixel(row, column):
-    page = HEIGHT // 8
+    page = row // 8 # -> getting page
+    bit = row % 8
     set_matrix_address(page, column)
-    send_data(1)
+    send_data(1 << bit)
 
 def set_matrix_address(page, column):
 #     In normal display data RAM read or write and page addressing mode, the following steps are required to define the starting RAM access pointer location:
@@ -73,32 +77,61 @@ def set_matrix_address(page, column):
 #       • Set the upper start column address of pointer by command 10h~1Fh.
     send_command( START_PAGE_INDEX | (page & ADDRESS_MASK) )
     send_command( ADDRESS_LOWER_NIBBLE | (column & ADDRESS_MASK) )
-    send_command( ADDRESS_HIGER_NIBBLE | ((column >> 4) & ADDRESS_MASK) )
+    send_command( ADDRESS_HIGHER_NIBBLE | ((column >> 4) & ADDRESS_MASK) )
+
+def clear_screen():
+    for page in range(HEIGHT // 8):    
+        set_matrix_address(page, 0)
+        for _ in range(WIDTH):
+            send_data(0x00)
 
 def initialize():
     # Software Initialization Flow Chart
     init_buffer = [
+        COMMAND_DISPLAY_OFF,
+        0xD5, 0x80, # Clock
         0xA8, 0x3F, # Mux ratio
         0xD3, 0x00, # Display offset
-        0x40,       # Display start line
-        0xA0,       # Segment re-map
-        0xC,        # COM output scan direction
-        0xDA, 0x02, # COM pins configuration
+        COMMAND_DISPLAY_START_LINE,
+        COMMAND_MEMORY_MODE, 0x00,
+        0xA1,       # Segment re-map
+        0xC8,       # COM output scan direction
+        0xDA, 0x12, # COM pins configuration    # no se porque el segundo parametro y su valor
         0x81, 0x7F, # Contrast control
+        0xD9, 0xF1,        # Pre-charge
+        0xDB, 0x40,        # VCOMH deselect
         0xA4,       # Entire display on
-        0xA6,       # Normal display
-        0xD5, 0x80, # OSC frecuency
+        COMMAND_NORMAL_DISPLAY,
         0x8D, 0x14, # charger pump regulator
-        0xAF        # Display on  
+        COMMAND_DISPLAY_ON
     ]
 
     for command in init_buffer:
         send_command(command)
 
+    clear_screen()
     row = 3
     column = 1
     index = 0   
     x = range(20)
+
+    #send_command(COMMAND_DISPLAY_OFF)
+
+    # son 64 filas, quiero la 19
+    row = 19
+    # row // 8 = 2, pagina 2
+    column = 1 # 0000_0011
+    # 1 pixel es 1 bit, solo quiero pintar un bit no la columna completa!
+    #
+    # 0 LSB 1px
+    # 0     1px
+    # 1     1px
+    # 1     1px -> este quiero pintar
+    # 0     1px
+    # 0     1px
+    # 0     1px
+    # 0 MSB 1px
+    
     for n in x:
         draw_pixel(row, column + index )
         index += 1
