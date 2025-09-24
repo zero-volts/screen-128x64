@@ -24,6 +24,13 @@ El codigo realizado es solo para entender y aprender como es la comunicacion ent
    ```bash
    sudo nano /boot/config.txt
    ```
+
+   o
+
+   ```bash
+   sudo nano /boot/firmware/config.txt
+   ```
+   
 2. Busca la línea relacionada con I²C y asegúrate de que esté habilitada:
    ```ini
    dtparam=i2c_arm=on
@@ -65,6 +72,7 @@ sudo modprobe i2c-bcm2835
 Instala la utilidad:
 ```bash
 sudo apt install i2c-tools
+sudo apt install  python3-smbus 
 ```
 
 Ejecuta:
