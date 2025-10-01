@@ -90,3 +90,11 @@ Deberías ver la dirección del SSD1306, normalmente `0x3C` o `0x3D`:
 ...
 ```
 ----
+
+### Capitulos de youtube
+-----
+Videos con el proceso de configuración y programación 
+
+1. [Conexión y prueba con Luma](https://www.youtube.com/watch?v=elASqxcndiY)
+2. [Dibujando pixel y linea](https://www.youtube.com/watch?v=VSoqzRrRxDo)
+3. [Corrigiendo error de dibujado](https://www.youtube.com/watch?v=VveN0igHAqM&pp=0gcJCfsJAYcqIYzv)
