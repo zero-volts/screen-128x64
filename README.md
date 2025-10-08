@@ -98,3 +98,6 @@ Videos con el proceso de configuración y programación
 1. [Conexión y prueba con Luma](https://www.youtube.com/watch?v=elASqxcndiY)
 2. [Dibujando pixel y linea](https://www.youtube.com/watch?v=VSoqzRrRxDo)
 3. [Corrigiendo error de dibujado](https://www.youtube.com/watch?v=VveN0igHAqM&pp=0gcJCfsJAYcqIYzv)
+4. [Escribiendo texto](https://www.youtube.com/watch?v=_3u2qo9WEdM)
+5. [Explicando estructura de fuentes](https://www.youtube.com/watch?v=YNvTG6cu3Hs)
+6. [Mostrando temperatura](https://www.youtube.com/watch?v=CNHzoOpp0k4)
